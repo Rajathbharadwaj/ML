@@ -29,4 +29,4 @@ def findS(data, target):
     return specific_hypothesis
  
 #obtaining the final hypothesis
-print("n The final hypothesis is:",finds(d,target))
+print("n The final hypothesis is:",findS(d,target))
