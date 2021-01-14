@@ -1,46 +1,32 @@
-import csv
-hypo = ['%','%','%','%','%','%'];
-
-with open('trainingdata.csv') as csv_file:
-    readcsv = csv.reader(csv_file, delimiter=',')
-    print(readcsv)
-    
-    data = []
-    print("\nThe given training examples are:")
-    for row in readcsv:
-        print(row)
-        if row[len(row)-1].upper() == "YES":
-            data.append(row)
-
-print("\nThe positive examples are:");
-for x in data:
-    print(x);
-print("\n");
-
-TotalExamples = len(data);
-i=0;
-j=0;
-k=0;
-print("The steps of the Find-s algorithm are :\n",hypo);
-list = [];
-p=0;
-d=len(data[p])-1;
-for j in range(d):
-    list.append(data[i][j]);
-hypo=list;
-i=1;
-for i in range(TotalExamples):
-    for k in range(d):
-        if hypo[k]!=data[i][k]:
-            hypo[k]='?';
-            k=k+1;        
-        else:
-            hypo[k];
-    print(hypo);
-i=i+1;
-
-print("\nThe maximally specific Find-s hypothesis for the given training examples is :");
-list=[];
-for i in range(d):
-    list.append(hypo[i]);
-print(list);
+import pandas as pd
+import numpy as np
+ 
+#to read the data in the csv file
+data = pd.read_csv("data.csv")
+print(data,"n")
+ 
+#making an array of all the attributes
+d = np.array(data)[:,:-1]
+print("n The attributes are: ",d)
+ 
+#segragating the target that has positive and negative examples
+target = np.array(data)[:,-1]
+print("n The target is: ",target)
+ 
+#training function to implement find-s algorithm
+def findS(data, target):
+    for i, val in enumerate(target):
+        if val == 'Yes':
+            specific_hypothesis = data[i].copy()
+            break
+    for i, val in enumerate(data):
+        if target[i] == 'Yes':
+            for x in range(len(specific_hypothesis)):
+                if val[x]!=specific_hypothesis[x]:
+                    specific_hypothesis[x] = '?'
+                else:
+                    pass
+    return specific_hypothesis
+ 
+#obtaining the final hypothesis
+print("n The final hypothesis is:",findS(d,target))
