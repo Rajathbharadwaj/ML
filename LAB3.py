@@ -1,7 +1,7 @@
 import numpy as np
 import math
 import csv
-from sklearn.tree import DecisionTreeClassifier
+
 
 def read_data(filename):
     with open(filename, 'r') as csvfile:
@@ -27,18 +27,6 @@ class Node:
 
 def subtables(data, col, delete):
 
-    '''
-    Returns items and dict of the data 
-
-    Eg:
-
-    ['Overcast' 'Rainy' 'Sunny']
- {'Overcast': array([[b'Overcast', b'Hot', b'High', b'False', b'Yes'],
-       [b'Overcast', b'Cool', b'Normal', b'True', b'Yes'],
-       [b'Overcast', b'Mild', b'High', b'True', b'Yes'],
-       [b'Overcast', b'Hot', b'Normal', b'False', b'Yes']], dtype='|S32'),
-
-    '''
     dict = {}
     items = np.unique(data[:, col]) 
     count = np.zeros((items.shape[0], 1), dtype=np.int32) 
