@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
  
 #to read the data in the csv file
-data = pd.read_csv("data.csv")
+data = pd.read_csv("weather.csv")
 print(data,"n")
  
 #making an array of all the attributes
