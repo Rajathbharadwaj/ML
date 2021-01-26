@@ -40,23 +40,23 @@ def subtables(data, col, delete):
 
     '''
     dict = {}
-    items = np.unique(data[:, col]) #unique of rows Eg [yes, no]
-    count = np.zeros((items.shape[0], 1), dtype=np.int32) #init to zeros of items' shape
+    items = np.unique(data[:, col]) 
+    count = np.zeros((items.shape[0], 1), dtype=np.int32) 
     
      
     
-    for x in range(items.shape[0]): #for every items' row
-        for y in range(data.shape[0]): #for every data's row
-            if data[y, col] == items[x]: # if data's row == items' value
+    for x in range(items.shape[0]): 
+        for y in range(data.shape[0]): 
+            if data[y, col] == items[x]:
                 count[x] += 1 
                 
     for x in range(items.shape[0]):
-        dict[items[x]] = np.empty((int(count[x]), data.shape[1]), dtype="|S32") #init to zeros
+        dict[items[x]] = np.empty((int(count[x]), data.shape[1]), dtype="|S32") 
         print(dict)
         pos = 0
         for y in range(data.shape[0]):
             if data[y, col] == items[x]:
-                dict[items[x]][pos] = data[y] #assign keys and values to get the subtable
+                dict[items[x]][pos] = data[y] 
                 pos += 1       
         if delete:
             dict[items[x]] = np.delete(dict[items[x]], col, 1)
@@ -68,7 +68,7 @@ def entropy(S):
     print(S)
     items = np.unique(S)
     print(f'Entropy-> {items}')
-    if items.size == 1: #if only 1 row then 0
+    if items.size == 1:
         return 0
     
     counts = np.zeros((items.shape[0], 1))
@@ -78,13 +78,10 @@ def entropy(S):
         counts[x] = sum(S == items[x]) / (S.size * 1.0)
 
     for count in counts:
-        sums += -1 * count * math.log(count, 2) #calculate entropy 
+        sums += -1 * count * math.log(count, 2) 
         
-        '''
-        Summation(p(xi)* log2(p(xi)))
-
-        '''
-        return sums
+        
+    return sums
 
 def gain_ratio(data, col):
     items, dict = subtables(data, col, delete=False) 
@@ -94,36 +91,20 @@ def gain_ratio(data, col):
     intrinsic = np.zeros((items.shape[0], 1))
     
     for x in range(items.shape[0]):
-        ratio = dict[items[x]].shape[0]/(total_size * 1.0) #ratio 
-        '''
-        |  |Sv|/|S|  |
-        '''
+        ratio = dict[items[x]].shape[0]/(total_size * 1.0) 
+       
         entropies[x] = ratio * entropy(dict[items[x]][:, -1])  
 
-        '''
-        |  |Sv|/|S|  | * entropy(S)
-        '''
         intrinsic[x] = ratio * math.log(ratio, 2)
 
-        #calculate entropy 
+       
         
-        '''
-        Summation(p(xi)* log2(p(xi)))
-
-        '''
-        
-    total_entropy = entropy(data[:, -1]) #dataset entropy
-    iv = -1 * sum(intrinsic) #information gain (i guess... :D)
+    total_entropy = entropy(data[:, -1]) 
+    iv = -1 * sum(intrinsic) 
     
     for x in range(entropies.shape[0]):
-        total_entropy -= entropies[x]  #gain 
+        total_entropy -= entropies[x]  
 
-        
-        
-        '''
-        gain(s) = Totalentropy(S) -I(Attr) 
-
-        '''
         
     return total_entropy / iv
 
@@ -132,24 +113,16 @@ def create_node(data, metadata):
         node = Node("")
         node.answer = np.unique(data[:, -1])[0]
         return node
-
-        '''
-        if only one row
-            return node as leaf
-        '''
-        
+    
     gains = np.zeros((data.shape[1] - 1, 1))
     
     for col in range(data.shape[1] - 1):
         gains[col] = gain_ratio(data, col)
-        '''
-        Calculate individual gains or all columns
+       
         
-        '''
-        
-    split = np.argmax(gains) # calculate max gain to make root node
+    split = np.argmax(gains) 
     
-    node = Node(metadata[split])  #make root node with max gain  
+    node = Node(metadata[split]) 
     metadata = np.delete(metadata, split, 0)    
     
     items, dict = subtables(data, split, delete=True)
@@ -157,10 +130,6 @@ def create_node(data, metadata):
     for x in range(items.shape[0]):
         child = create_node(dict[items[x]], metadata)
         node.children.append((items[x], child)) 
-
-        '''
-        Iteratively call create_node as ID3 is recurrsive algo
-        '''
     
     return node
 
